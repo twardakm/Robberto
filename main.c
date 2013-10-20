@@ -18,7 +18,6 @@ int main(void)
 	PORTB = 0xff;
 	PORTC = 0xff;
 	PORTD = 0xff;
-	return 0;
 
     return 0;
 }
