@@ -7,7 +7,6 @@ int main(void)
 {
 
 	MCUCSR |=(1<<JTD);
-    MCUCSR |=(1<<JTD);
 
 	DDRA = 0xff;
 	DDRB = 0xff;
