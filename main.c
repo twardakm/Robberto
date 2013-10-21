@@ -13,9 +13,7 @@ int main(void)
 
     while(1)
     {
-
-        jedz_przod_2();
-        jedz_przod();
+        //jedz_przod();
     }
 
     return 0;

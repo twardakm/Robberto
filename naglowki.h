@@ -72,22 +72,6 @@ void jedz_przod()
     _delay_ms(20);
     PORT_DIODY &= ~(_BV(LED4));
 
-    PORT_SILNIKOW |= _BV(KIERUNEK_1_BV);
-    _delay_ms(10);
-}
-
-void jedz_przod_2()
-{
-    PORT_DIODY |= _BV(LED1);
-    PORT_SILNIKOW |= _BV(CLOCK_1_BV);
-    _delay_ms(5);
-    PORT_DIODY &= ~(_BV(LED1));
-
-    PORT_DIODY |= _BV(LED4);
-    PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
-    _delay_ms(20);
-    PORT_DIODY &= ~(_BV(LED4));
-    PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
     _delay_ms(10);
 }
 
