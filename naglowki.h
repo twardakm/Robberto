@@ -32,16 +32,13 @@ void ustaw_porty_silnika()
     PORT_SILNIKOW = 0xff;
 
     PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
-    PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
 }
 
 void jedz_przod()
 {
     PORT_SILNIKOW |= _BV(CLOCK_1_BV);
-    PORT_SILNIKOW |= _BV(CLOCK_2_BV);
     _delay_ms(OPOZNIJ);
     PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
-    PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
 }
 
 #endif // NAGLOWKI_H_INCLUDED
