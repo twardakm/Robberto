@@ -52,6 +52,7 @@ void ustaw_porty_silnika()
     PORT_DIODY = 0;
 
     PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
+    //PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
     PORT_DIODY |= _BV(LED4);
     _delay_ms(OPOZNIJ_MS);
     PORT_DIODY &= ~(_BV(LED4));
@@ -64,15 +65,17 @@ void jedz_przod()
 {
     PORT_DIODY |= _BV(LED1);
     PORT_SILNIKOW |= _BV(CLOCK_1_BV);
-    _delay_ms(5);
+    PORT_SILNIKOW |= _BV(CLOCK_2_BV);
+    _delay_ms(20);
     PORT_DIODY &= ~(_BV(LED1));
 
     PORT_DIODY |= _BV(LED4);
     PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
-    _delay_ms(20);
+    PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
+    _delay_ms(5);
     PORT_DIODY &= ~(_BV(LED4));
 
-    _delay_ms(10);
+   // _delay_ms(10);
 }
 
 #endif // NAGLOWKI_H_INCLUDED
