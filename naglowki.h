@@ -31,13 +31,20 @@
 #define LED4    PC3
 
 //opóźnienie [ms] (później zamienić na jakiś timer)
-#define OPOZNIJ_MS_WYSOKIE 20
-#define OPOZNIJ_MS_NISKIE 5
+#define OPOZNIJ_MS_WYSOKIE 5
+#define OPOZNIJ_MS_NISKIE 2
+
+//sterowanie
+#define PRZOD   8
+#define STOJ    5
+#define TYL     2
+#define PRAWO   6
+#define LEWO    4
 
 void wylacz_JTAG()
 {
     MCUCSR |=(1<<JTD);
-	MCUCSR |=(1<<JTD);
+    MCUCSR |=(1<<JTD);
 }
 
 void ustaw_porty_silnika()
@@ -45,15 +52,36 @@ void ustaw_porty_silnika()
     DDR_SILNIKOW = 0xff;
     PORT_SILNIKOW = 0xff;
 
-    DDR_DIODY = 0xff;
-    PORT_DIODY = 0xff;
-
     PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
     PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
 
-    PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
+  //  PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
 
     _delay_ms(OPOZNIJ_MS_NISKIE);
+}
+
+void USART_Init( unsigned int baud )
+{
+    /* Set baud rate */
+    UBRRH = (unsigned char)(baud>>8);
+    UBRRL = (unsigned char)baud;
+    /* Enable receiver and transmitter */
+    UCSRB = (1<<RXEN)|(1<<TXEN);
+    /* Set frame format: 8data, 2stop bit */
+    UCSRC = (1<<URSEL)|(1<<USBS)|(3<<UCSZ0);
+}
+
+void ustaw_porty_USART()
+{
+    DDRD |= _BV(0);
+    DDRD &= ~_BV(1);
+
+    USART_Init(12);
+}
+
+void ustaw_porty_diody()
+{
+    DDR_DIODY = 0xff;
 }
 
 void jedz_przod()
@@ -66,5 +94,47 @@ void jedz_przod()
     PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
     _delay_ms(OPOZNIJ_MS_NISKIE);
 }
+
+void baczek()
+{
+    PORT_SILNIKOW |= _BV(CLOCK_1_BV);
+    PORT_SILNIKOW |= _BV(CLOCK_2_BV);
+    _delay_ms(OPOZNIJ_MS_WYSOKIE);
+
+    PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
+    PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
+    _delay_ms(OPOZNIJ_MS_NISKIE);
+}
+
+
+void stoj()
+{
+
+}
+
+void USART_Transmit( unsigned char data )
+{
+    /* Wait for empty transmit buffer */
+    while ( !( UCSRA & (1<<UDRE)) )
+        ;
+    /* Put data into buffer, sends the data */
+    UDR = data;
+}
+
+unsigned char USART_Receive( void )
+{
+    /* Wait for data to be received */
+    while ( !(UCSRA & (1<<RXC)) )
+        ;
+    /* Get and return received data from buffer */
+    return UDR;
+}
+
+void USART_Flush( void )
+{
+    unsigned char dummy;
+    while ( UCSRA & (1<<RXC) ) dummy = UDR;
+}
+
 
 #endif // NAGLOWKI_H_INCLUDED
