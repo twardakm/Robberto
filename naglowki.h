@@ -31,8 +31,8 @@
 #define LED4    PC3
 
 //opóźnienie [ms] (później zamienić na jakiś timer)
-#define OPOZNIJ_MS 50
-#define OPOZNIJ_US 10
+#define OPOZNIJ_MS_WYSOKIE 20
+#define OPOZNIJ_MS_NISKIE 5
 
 void wylacz_JTAG()
 {
@@ -48,34 +48,23 @@ void ustaw_porty_silnika()
     DDR_DIODY = 0xff;
     PORT_DIODY = 0xff;
 
-    _delay_ms(OPOZNIJ_MS);
-    PORT_DIODY = 0;
-
     PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
-    //PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
-    PORT_DIODY |= _BV(LED4);
-    _delay_ms(OPOZNIJ_MS);
-    PORT_DIODY &= ~(_BV(LED4));
+    PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
 
-    /*PORT_SILNIKOW &= ~(_BV(RESET_1_BV));
-    PORT_SILNIKOW &= ~(_BV(RESET_2_BV));*/
+    PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
+
+    _delay_ms(OPOZNIJ_MS_NISKIE);
 }
 
 void jedz_przod()
 {
-    PORT_DIODY |= _BV(LED1);
     PORT_SILNIKOW |= _BV(CLOCK_1_BV);
     PORT_SILNIKOW |= _BV(CLOCK_2_BV);
-    _delay_ms(20);
-    PORT_DIODY &= ~(_BV(LED1));
+    _delay_ms(OPOZNIJ_MS_WYSOKIE);
 
-    PORT_DIODY |= _BV(LED4);
     PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
     PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
-    _delay_ms(5);
-    PORT_DIODY &= ~(_BV(LED4));
-
-   // _delay_ms(10);
+    _delay_ms(OPOZNIJ_MS_NISKIE);
 }
 
 #endif // NAGLOWKI_H_INCLUDED
