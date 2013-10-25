@@ -109,7 +109,15 @@ void baczek()
 
 void stoj()
 {
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+//komentarz
+>>>>>>> 48255b8a3120ce369a3aff9dc676bf797d4ebe9d
+>>>>>>> 1d74df42f83c631c6b383b9175752f7c320b986e
 }
 
 void USART_Transmit( unsigned char data )
@@ -136,5 +144,12 @@ void USART_Flush( void )
     while ( UCSRA & (1<<RXC) ) dummy = UDR;
 }
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> 48255b8a3120ce369a3aff9dc676bf797d4ebe9d
+>>>>>>> 1d74df42f83c631c6b383b9175752f7c320b986e
 #endif // NAGLOWKI_H_INCLUDED
