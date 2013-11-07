@@ -41,10 +41,22 @@
 #define PRAWO   6
 #define LEWO    4
 
+volatile uint8_t przod;
+volatile uint16_t przepelnienie;
+
+void jedz()
 void wylacz_JTAG()
 {
     MCUCSR |=(1<<JTD);
     MCUCSR |=(1<<JTD);
+}
+void timer_init()
+{
+    MCUCR |= (0<<ISC01)|(1<<ISC00); //ustawinie przerwan na interrupcie 0, PD2
+    GICR |= (1<<INT0);
+
+    TCCR0 = (0<<CS02)|(0<<CS01)|(1<<CS00); //brak preskalera na timerze0
+    TIMSK = (1<<TOIE0); //wlaczenie zegarka 0
 }
 
 void ustaw_porty_silnika()
@@ -86,17 +98,9 @@ void ustaw_porty_diody()
 
 void jedz_przod()
 {
-    PORT_SILNIKOW |= _BV(CLOCK_1_BV);
-    PORT_SILNIKOW |= _BV(CLOCK_2_BV);
-    _delay_ms(OPOZNIJ_MS_WYSOKIE);
-
-    PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
-    PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
-    _delay_ms(OPOZNIJ_MS_NISKIE);
+    kierunek=PRZOD;
+    przepelnienie=0;
 }
-
-
-
 
 void stoj()
 {
@@ -126,6 +130,45 @@ void USART_Flush( void )
     unsigned char dummy;
     while ( UCSRA & (1<<RXC) ) dummy = UDR;
 }
+void init_timer0()
+{
+    MCUCR |= (0<<ISC01)|(1<<ISC00); //ustawinie przerwan na interrupcie 0, PD2
+    GICR |= (1<<INT0);
 
+    TCCR0 = (0<<CS02)|(0<<CS01)|(1<<CS00); //brak preskalera na timerze0
+    TIMSK = (1<<TOIE0); //wlaczenie zegarka 0
+}
+
+ISR(TIMER0_OVF_vect)
+{
+    if(przepelnienie>600)
+        przepelnienie=0;
+    przepelnienie++; //1przepelnienie trwa 16us, 5ms=5000/16=312przepelnien
+}
+ISR(INT0_vect)
+{
+    if(kierunek==PRZOD)
+    {
+        PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
+        PORT_SILNIKOW &= ~(_BV(KIERUNEK_2_BV));
+
+        jedz();
+    }
+}
+void jedz()
+{
+    if(przepelnienie==0) // 5ms wejdzie w niskie ms
+    {
+        PORT_SILNIKOW |= _BV(CLOCK_1_BV);
+        PORT_SILNIKOW |= _BV(CLOCK_2_BV);
+    }
+    else if (przepelnienie==312) //po w sumie 7ms wejdzie w wysolkei przy 16mhx
+    {
+        PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
+        PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
+    }
+    else if (przpelnienie>=437)
+        przepelnienie=0;
+}
 
 #endif // NAGLOWKI_H_INCLUDED

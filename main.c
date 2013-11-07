@@ -16,6 +16,7 @@ int main(void)
     ustaw_porty_USART();
     ustaw_porty_diody();
 
+    timer_init();
     sei();
 
 
