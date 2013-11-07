@@ -5,7 +5,6 @@
 #define DDR_SILNIKOW    DDRA
 #define PORT_SILNIKOW   PORTA
 
-
 #define CNTL_1  0
 #define CNTL_1_BV PA0
 #define CLOCK_1 1
