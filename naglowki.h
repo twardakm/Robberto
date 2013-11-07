@@ -31,8 +31,8 @@
 #define LED4    PC3
 
 //opóźnienie [ms] (później zamienić na jakiś timer)
-#define OPOZNIJ_MS_WYSOKIE 5
-#define OPOZNIJ_MS_NISKIE 2
+#define OPOZNIJ_MS_WYSOKIE 19 //312 przy 16mhz
+#define OPOZNIJ_MS_NISKIE 27 //437 przy 16mhz
 
 //sterowanie
 #define PRZOD   8
@@ -41,10 +41,10 @@
 #define PRAWO   6
 #define LEWO    4
 
-volatile uint8_t przod;
-volatile uint16_t przepelnienie;
+volatile uint16_t przepelnienie=0;
+volatile uint8_t krok;
 
-void jedz()
+void jedz(int);
 void wylacz_JTAG()
 {
     MCUCSR |=(1<<JTD);
@@ -96,15 +96,33 @@ void ustaw_porty_diody()
     DDR_DIODY = 0xff;
 }
 
-void jedz_przod()
+void jedz_przod(int krok)
 {
-    kierunek=PRZOD;
+    PORT_SILNIKOW |= (_BV(KIERUNEK_1_BV));
+    PORT_SILNIKOW |= (_BV(KIERUNEK_2_BV));
     przepelnienie=0;
+        jedz(krok);
 }
-
-void stoj()
+void jedz_tyl(int krok)
 {
-
+    PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
+    PORT_SILNIKOW &= ~(_BV(KIERUNEK_2_BV));
+    przepelnienie=0;
+        jedz(krok);
+}
+void jedz_lewo(int krok)
+{
+    PORT_SILNIKOW |= (_BV(KIERUNEK_1_BV));
+    PORT_SILNIKOW &= ~(_BV(KIERUNEK_2_BV));
+    przepelnienie=0;
+        jedz(krok);
+}
+void jedz_prawo(int krok)
+{
+    PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
+    PORT_SILNIKOW |= (_BV(KIERUNEK_2_BV));
+    przepelnienie=0;
+        jedz(krok);
 }
 
 void USART_Transmit( unsigned char data )
@@ -132,9 +150,6 @@ void USART_Flush( void )
 }
 void init_timer0()
 {
-    MCUCR |= (0<<ISC01)|(1<<ISC00); //ustawinie przerwan na interrupcie 0, PD2
-    GICR |= (1<<INT0);
-
     TCCR0 = (0<<CS02)|(0<<CS01)|(1<<CS00); //brak preskalera na timerze0
     TIMSK = (1<<TOIE0); //wlaczenie zegarka 0
 }
@@ -145,30 +160,26 @@ ISR(TIMER0_OVF_vect)
         przepelnienie=0;
     przepelnienie++; //1przepelnienie trwa 16us, 5ms=5000/16=312przepelnien
 }
-ISR(INT0_vect)
-{
-    if(kierunek==PRZOD)
-    {
-        PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
-        PORT_SILNIKOW &= ~(_BV(KIERUNEK_2_BV));
 
-        jedz();
-    }
-}
-void jedz()
+void jedz(int krok)
 {
+    int licznik=0;
+    while(licznik<krok)
+    {
     if(przepelnienie==0) // 5ms wejdzie w niskie ms
     {
         PORT_SILNIKOW |= _BV(CLOCK_1_BV);
         PORT_SILNIKOW |= _BV(CLOCK_2_BV);
     }
-    else if (przepelnienie==312) //po w sumie 7ms wejdzie w wysolkei przy 16mhx
+    else if (przepelnienie==OPOZNIJ_MS_WYSOKIE)
     {
         PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
         PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
     }
-    else if (przpelnienie>=437)
+    else if (przepelnienie>=OPOZNIJ_MS_NISKIE)
         przepelnienie=0;
+    licznik++;
+    }
 }
 
 #endif // NAGLOWKI_H_INCLUDED

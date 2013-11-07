@@ -16,14 +16,14 @@ int main(void)
     ustaw_porty_USART();
     ustaw_porty_diody();
 
-    timer_init();
+    init_timer0();
     sei();
-
-
 
     while(1)
     {
-        jedz_przod();
+        jedz_przod(1000);
+      //  jedz_lewo(1000);
+
 
         /*dane=(USART_Receive());
 
