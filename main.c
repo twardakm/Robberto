@@ -22,10 +22,11 @@ int main(void)
     int licznik;
     while(1)
     {
-            // for(licznik=0;licznik<100;licznik++)
+            for(licznik=0;licznik<100;licznik++)
+            jedz_przod();
+             for(licznik=0;licznik<100;licznik++)
             jedz_lewo();
-            //  for(licznik=0;licznik<100;licznik++)
-            //   jedz_tyl();
+
 
         /*dane=(USART_Receive());
 

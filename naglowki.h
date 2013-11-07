@@ -31,8 +31,8 @@
 #define LED4    PC3
 
 //opóźnienie [ms] (później zamienić na jakiś timer)
-#define OPOZNIJ_MS_WYSOKIE 19 //312 przy 16mhz
-#define OPOZNIJ_MS_NISKIE 27 //437 przy 16mhz
+#define OPOZNIJ_MS_WYSOKIE 190 //312 przy 16mhz
+#define OPOZNIJ_MS_NISKIE 270 //437 przy 16mhz
 
 //sterowanie
 #define PRZOD   8
@@ -103,18 +103,17 @@ void ustaw_porty_diody()
 }
 void jedz()
 {
-    if(przepelnienie==0) // 5ms wejdzie w niskie ms
+    while(przepelnienie<OPOZNIJ_MS_WYSOKIE) // 5ms wejdzie w niskie ms
     {
         PORT_SILNIKOW |= _BV(CLOCK_1_BV);
         PORT_SILNIKOW |= _BV(CLOCK_2_BV);
     }
-    else if (przepelnienie==OPOZNIJ_MS_WYSOKIE)
+    while(przepelnienie<OPOZNIJ_MS_NISKIE)
     {
         PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
         PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
     }
-    else if (przepelnienie>=OPOZNIJ_MS_NISKIE)
-        przepelnienie=0;
+    przepelnienie=0;
 
 }
 void jedz_przod()
