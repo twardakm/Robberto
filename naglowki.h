@@ -5,7 +5,6 @@
 #define DDR_SILNIKOW    DDRA
 #define PORT_SILNIKOW   PORTA
 
-
 #define CNTL_1  0
 #define CNTL_1_BV PA0
 #define CLOCK_1 1
@@ -96,16 +95,7 @@ void jedz_przod()
     _delay_ms(OPOZNIJ_MS_NISKIE);
 }
 
-void baczek()
-{
-    PORT_SILNIKOW |= _BV(CLOCK_1_BV);
-    PORT_SILNIKOW |= _BV(CLOCK_2_BV);
-    _delay_ms(OPOZNIJ_MS_WYSOKIE);
 
-    PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
-    PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
-    _delay_ms(OPOZNIJ_MS_NISKIE);
-}
 
 
 void stoj()

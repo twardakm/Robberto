@@ -22,8 +22,7 @@ int main(void)
 
     while(1)
     {
-        baczek();
-        //jedz_przod();
+        jedz_przod();
 
         /*dane=(USART_Receive());
 
