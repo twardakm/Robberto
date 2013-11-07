@@ -7,6 +7,7 @@
 #include <avr/interrupt.h>
 #include "naglowki.h"
 
+
 int main(void)
 {
     unsigned char dane;
@@ -18,12 +19,13 @@ int main(void)
 
     init_timer0();
     sei();
-
+    int licznik;
     while(1)
     {
-        jedz_przod(1000);
-      //  jedz_lewo(1000);
-
+            // for(licznik=0;licznik<100;licznik++)
+            jedz_lewo();
+            //  for(licznik=0;licznik<100;licznik++)
+            //   jedz_tyl();
 
         /*dane=(USART_Receive());
 
@@ -32,15 +34,15 @@ int main(void)
         /*
         if (dane==TYL)
             jedz_tyl();*/
-       /* if  (dane==STOJ)
-            stoj();*/
+        /* if  (dane==STOJ)
+             stoj();*/
         /*
         if  (dane==PRAWO)
             jedz_prawo();
         if  (dane == LEWO)
             jedz_lewo();*/
 
-       // _delay_ms(1);
+        // _delay_ms(1);
     }
 
     return 0;

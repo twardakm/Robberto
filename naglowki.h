@@ -41,10 +41,24 @@
 #define PRAWO   6
 #define LEWO    4
 
-volatile uint16_t przepelnienie=0;
-volatile uint8_t krok;
+volatile uint16_t przepelnienie=0, krok;
 
-void jedz(int);
+void jedz_przod();
+void jedz_tyl();
+void jedz_lewo();
+void jedz_prawo();
+void wylacz_JTAG();
+void timer_init();
+void ustaw_porty_silnika();
+void USART_Init( unsigned int  );
+void ustaw_porty_USART();
+void ustaw_porty_diody();
+void jedz();
+void USART_Transmit( unsigned char  );
+unsigned char USART_Receive( void );
+void USART_Flush( void );
+void init_timer0();
+
 void wylacz_JTAG()
 {
     MCUCSR |=(1<<JTD);
@@ -52,9 +66,6 @@ void wylacz_JTAG()
 }
 void timer_init()
 {
-    MCUCR |= (0<<ISC01)|(1<<ISC00); //ustawinie przerwan na interrupcie 0, PD2
-    GICR |= (1<<INT0);
-
     TCCR0 = (0<<CS02)|(0<<CS01)|(1<<CS00); //brak preskalera na timerze0
     TIMSK = (1<<TOIE0); //wlaczenie zegarka 0
 }
@@ -64,12 +75,7 @@ void ustaw_porty_silnika()
     DDR_SILNIKOW = 0xff;
     PORT_SILNIKOW = 0xff;
 
-    PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
-    PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
-
-  //  PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
-
-    _delay_ms(OPOZNIJ_MS_NISKIE);
+    _delay_ms(5);
 }
 
 void USART_Init( unsigned int baud )
@@ -95,34 +101,46 @@ void ustaw_porty_diody()
 {
     DDR_DIODY = 0xff;
 }
+void jedz()
+{
+    if(przepelnienie==0) // 5ms wejdzie w niskie ms
+    {
+        PORT_SILNIKOW |= _BV(CLOCK_1_BV);
+        PORT_SILNIKOW |= _BV(CLOCK_2_BV);
+    }
+    else if (przepelnienie==OPOZNIJ_MS_WYSOKIE)
+    {
+        PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
+        PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
+    }
+    else if (przepelnienie>=OPOZNIJ_MS_NISKIE)
+        przepelnienie=0;
 
-void jedz_przod(int krok)
+}
+void jedz_przod()
 {
     PORT_SILNIKOW |= (_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW |= (_BV(KIERUNEK_2_BV));
-    przepelnienie=0;
-        jedz(krok);
+    jedz();
 }
-void jedz_tyl(int krok)
+void jedz_tyl()
 {
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_2_BV));
-    przepelnienie=0;
-        jedz(krok);
+    jedz();
 }
-void jedz_lewo(int krok)
+void jedz_lewo()
 {
     PORT_SILNIKOW |= (_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_2_BV));
-    przepelnienie=0;
-        jedz(krok);
+    jedz();
+
 }
-void jedz_prawo(int krok)
+void jedz_prawo()
 {
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW |= (_BV(KIERUNEK_2_BV));
-    przepelnienie=0;
-        jedz(krok);
+    jedz();
 }
 
 void USART_Transmit( unsigned char data )
@@ -156,30 +174,9 @@ void init_timer0()
 
 ISR(TIMER0_OVF_vect)
 {
-    if(przepelnienie>600)
-        przepelnienie=0;
-    przepelnienie++; //1przepelnienie trwa 16us, 5ms=5000/16=312przepelnien
+    przepelnienie++;//1przepelnienie trwa 16us, 5ms=5000/16=312przepelnien
 }
 
-void jedz(int krok)
-{
-    int licznik=0;
-    while(licznik<krok)
-    {
-    if(przepelnienie==0) // 5ms wejdzie w niskie ms
-    {
-        PORT_SILNIKOW |= _BV(CLOCK_1_BV);
-        PORT_SILNIKOW |= _BV(CLOCK_2_BV);
-    }
-    else if (przepelnienie==OPOZNIJ_MS_WYSOKIE)
-    {
-        PORT_SILNIKOW &= ~(_BV(CLOCK_1_BV));
-        PORT_SILNIKOW &= ~(_BV(CLOCK_2_BV));
-    }
-    else if (przepelnienie>=OPOZNIJ_MS_NISKIE)
-        przepelnienie=0;
-    licznik++;
-    }
-}
+
 
 #endif // NAGLOWKI_H_INCLUDED
