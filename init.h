@@ -10,6 +10,7 @@ void ustaw_porty_silnika();
 void USART_Init( unsigned int  );
 void ustaw_porty_USART();
 void ustaw_porty_diody();
+void serwo_init();
 
 void wylacz_JTAG()
 {
@@ -75,6 +76,14 @@ void init_timer0()
 {
     TCCR0 = (0<<CS02)|(0<<CS01)|(1<<CS00); //brak preskalera na timerze0
     TIMSK = (1<<TOIE0); //wlaczenie zegarka 0
+}
+void serwo_init()
+{
+    //port PWM na wyjscie
+    TCCR1A = (1<<COM1A1) | (1<<WGM11); //tryb pracy licznika(15), ustawienie prescalera na 1,
+    TCCR1B = (1<<CS10)|(1<<WGM12)|(1<<WGM13); //(preskaler=1)|(szybki PWM)
+    DDRD |=_BV(5);
+    ICR1 = 19999; //T=20ms
 }
 
 

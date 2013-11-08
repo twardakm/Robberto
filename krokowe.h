@@ -72,14 +72,14 @@ void jedz_przod(volatile uint16_t *odleglosc)
 {
     PORT_SILNIKOW |= (_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW |= (_BV(KIERUNEK_2_BV));
-    for(licznik=0;licznik<*odleglosc;licznik++)
+    for(licznik=0;licznik<*odleglosc*STALA_ODLEGLOSCI;licznik++)
         jedz();
 }
 void jedz_tyl(volatile uint16_t *odleglosc)
 {
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_2_BV));
-    for(licznik=0;licznik<*odleglosc;licznik++)
+    for(licznik=0;licznik<*odleglosc*STALA_ODLEGLOSCI;licznik++)
         jedz();
 }
 void jedz_lewo(volatile uint16_t *odleglosc)

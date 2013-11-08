@@ -7,6 +7,7 @@
 #include <avr/interrupt.h>
 #include "krokowe.h"
 #include "init.h"
+#include "serwo.h"
 
 
 int main(void)
@@ -18,15 +19,38 @@ int main(void)
     ustaw_porty_USART();
     ustaw_porty_diody();
 
+    serwo_init();
     init_timer0();
     sei();
-    int licznik;
+
     volatile uint16_t kat=90;// wykona obrot o 90 stopni
-    volatile uint16_t odleglosc=910; //
-   // while(1)
+    volatile uint16_t odleglosc=100; //
+
+     while(1)
     {
+       serwozeruj();
+        _delay_ms(500);
+
+      jedz_przod(&odleglosc);
         _delay_ms(1000);
-        jedz_przod(&odleglosc);
+      //jedz_lewo(&kat);
+     // _delay_ms(1000);
+
+
+        /*serwokat(katserwo, 10);
+        _delay_ms(500);
+        serwokat(katserwo, 35);
+        _delay_ms(500);
+        serwokat(katserwo,-45);
+        _delay_ms(500);
+         serwokat(katserwo, -10);
+        _delay_ms(500);
+        serwokat(katserwo, -35);
+        _delay_ms(500);
+        serwokat(katserwo, 45);
+        _delay_ms(500);*/
+
+
 
         /*dane=(USART_Receive());
 
