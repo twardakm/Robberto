@@ -5,7 +5,8 @@
 #define __DELAY_BACKWARD_COMPATIBLE__
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "naglowki.h"
+#include "krokowe.h"
+#include "init.h"
 
 
 int main(void)
@@ -20,13 +21,12 @@ int main(void)
     init_timer0();
     sei();
     int licznik;
-    while(1)
+    volatile uint16_t kat=90;// wykona obrot o 90 stopni
+    volatile uint16_t odleglosc=910; //
+   // while(1)
     {
-            for(licznik=0;licznik<100;licznik++)
-            jedz_przod();
-             for(licznik=0;licznik<100;licznik++)
-            jedz_lewo();
-
+        _delay_ms(1000);
+        jedz_przod(&odleglosc);
 
         /*dane=(USART_Receive());
 
