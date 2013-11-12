@@ -7,6 +7,7 @@
 #include <avr/interrupt.h>
 #include "krokowe.h"
 #include "init.h"
+#include "sonary.h"
 #include "serwo.h"
 
 
@@ -21,35 +22,45 @@ int main(void)
 
     serwo_init();
     init_timer0();
+    init_timer2();
+    init_sonary();
+
     sei();
 
     volatile uint16_t kat=90;// wykona obrot o 90 stopni
-    volatile uint16_t odleglosc=100; //
+    volatile uint16_t odleglosc=5; //odleglosc w cm
+    volatile uint8_t lewy=1, prawy=0, error=0;
 
-     while(1)
+
+    _delay_ms(1000);
+    while (1)
+    {
+        getdistance(&lewy, &prawy, &error);
+        _delay_ms(100);
+        if(lewy>=10)
+        {
+            jedz_przod(&odleglosc);
+        }
+        else if(lewy==0)
+        {
+            jedz_lewo(&kat);
+        }
+        else if(lewy<10)
+        {
+            jedz_tyl(&odleglosc);
+        }
+
+
+    }
+
+   /*  while(1)
     {
        serwozeruj();
         _delay_ms(500);
 
       jedz_przod(&odleglosc);
         _delay_ms(1000);
-      //jedz_lewo(&kat);
-     // _delay_ms(1000);
-
-
-        /*serwokat(katserwo, 10);
-        _delay_ms(500);
-        serwokat(katserwo, 35);
-        _delay_ms(500);
-        serwokat(katserwo,-45);
-        _delay_ms(500);
-         serwokat(katserwo, -10);
-        _delay_ms(500);
-        serwokat(katserwo, -35);
-        _delay_ms(500);
-        serwokat(katserwo, 45);
-        _delay_ms(500);*/
-
+    }*/
 
 
         /*dane=(USART_Receive());
@@ -68,7 +79,6 @@ int main(void)
             jedz_lewo();*/
 
         // _delay_ms(1);
-    }
 
     return 0;
 }

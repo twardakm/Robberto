@@ -72,6 +72,7 @@ void jedz_przod(volatile uint16_t *odleglosc)
 {
     PORT_SILNIKOW |= (_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW |= (_BV(KIERUNEK_2_BV));
+    TCNT2=0;
     for(licznik=0;licznik<*odleglosc*STALA_ODLEGLOSCI;licznik++)
         jedz();
 }
@@ -79,6 +80,7 @@ void jedz_tyl(volatile uint16_t *odleglosc)
 {
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_2_BV));
+    TCNT2=0;
     for(licznik=0;licznik<*odleglosc*STALA_ODLEGLOSCI;licznik++)
         jedz();
 }
@@ -86,6 +88,7 @@ void jedz_lewo(volatile uint16_t *odleglosc)
 {
     PORT_SILNIKOW |= (_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_2_BV));
+    TCNT2=0;
     for(licznik=0;licznik<*odleglosc*STALA_OBROTU;licznik++)
         jedz();
 
@@ -94,11 +97,12 @@ void jedz_prawo(volatile uint16_t *odleglosc)
 {
     PORT_SILNIKOW &= ~(_BV(KIERUNEK_1_BV));
     PORT_SILNIKOW |= (_BV(KIERUNEK_2_BV));
+    TCNT2=0;
     for(licznik=0;licznik<*odleglosc*STALA_OBROTU;licznik++)
         jedz();
 }
 
-ISR(TIMER0_OVF_vect)
+ISR(TIMER2_OVF_vect)
 {
     przepelnienie++;//1przepelnienie trwa 16us, 5ms=5000/16=312przepelnien
 }
