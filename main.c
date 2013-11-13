@@ -49,19 +49,17 @@ int main(void)
         {
             jedz_tyl(&odleglosc);
         }
-
+        /*serwokat(30);
+        _delay_ms(500);
+        serwokat(-30);
+        _delay_ms(500);
+        serwokat(45);
+        _delay_ms(500);
+        serwokat(0);
+        _delay_ms(500);
+        */
 
     }
-
-   /*  while(1)
-    {
-       serwozeruj();
-        _delay_ms(500);
-
-      jedz_przod(&odleglosc);
-        _delay_ms(1000);
-    }*/
-
 
         /*dane=(USART_Receive());
 

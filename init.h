@@ -1,8 +1,8 @@
 #ifndef INIT_H_INCLUDED
 #define INIT_H_INCLUDED
 
-#define TRIGGER1 PD6
-#define TRIGGER2 PD5
+#define TRIGGER1 PD4
+#define TRIGGER2 PD6
 
 void USART_Transmit( unsigned char  );
 unsigned char USART_Receive( void );
