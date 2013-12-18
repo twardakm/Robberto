@@ -1,14 +1,16 @@
 #include <avr/io.h>
-#define F_CPU 1000000UL
+#define F_CPU 8000000UL
 
 //potrzebne do delay w nowych kompilatorach
 #define __DELAY_BACKWARD_COMPATIBLE__
 #include <util/delay.h>
 #include <avr/interrupt.h>
-#include "krokowe.h"
+
 #include "init.h"
 #include "sonary.h"
 #include "serwo.h"
+#include "krokowe.h"
+
 
 
 int main(void)
@@ -27,56 +29,120 @@ int main(void)
 
     sei();
 
-    volatile uint16_t kat=90;// wykona obrot o 90 stopni
-    volatile uint16_t odleglosc=5; //odleglosc w cm
-    volatile uint8_t lewy=1, prawy=0, error=0;
 
+    _delay_ms(10);
+    PORT_DIODY=0x00;
+    int licznik=0;
 
-    _delay_ms(1000);
     while (1)
     {
+        _delay_ms(300);
         getdistance(&lewy, &prawy, &error);
-        _delay_ms(100);
-        if(lewy>=10)
+        if(lewy<5 && (lewy<prawy))
+            serwokat(15) ;
+        else if (prawy<5 && (prawy<lewy))
+            serwokat(-15);
+        else
+        serwokat(0);
+       // if(prawy<10)
+           // serwokat(30);
+
+        /*
+        licznik++;
+        if(licznik>10)
         {
-            jedz_przod(&odleglosc);
+            licznik=0;
+            check();
+        }
+        jedz_przod();
+        */
+
+        /*
+        int i;
+        //jedz();
+        _delay_ms(300);
+        PORT_DIODY=0x00;
+
+        getdistance(&lewy, &prawy, &error);
+
+        if(lewy<25)
+        {
+            PORT_DIODY |= _BV(LED1);
+            for(i=0;i<40;i++)
+                jedz_lewo();
+         }
+        else
+        {
+            for(i=0;i<30;i++)
+                jedz_przod();
+        }
+        serwokat(-30);
+        _delay_ms(300);
+        serwokat(30);
+        _delay_ms(300);
+        serwokat(0);
+
+        */
+
+
+
+
+        /* getdistance(&lewy, &prawy, &error);
+         _delay_ms(100);
+
+        if(lewy>10)// probna na lewy
+        {
+            serwokat(0);
+        }
+         else if(lewy==0)
+         {
+             jedz_przod(&odleglosc);
+         }
+         else if(lewy<10)
+         {
+             serwokat(-30);
+         }
+         */
+
+        /*
+               if(lewy<10 && prawy<10)
+        {
+            jedz_tyl(&odleglosc);
+        }
+        else if(lewy<10 && prawy>10)
+        {
+            serwokat(30);
+        }
+        else if(lewy>10 && prawy<10)
+        {
+            serwokat(-30);
         }
         else if(lewy==0)
         {
             jedz_lewo(&kat);
         }
-        else if(lewy<10)
-        {
-            jedz_tyl(&odleglosc);
-        }
-        /*serwokat(30);
-        _delay_ms(500);
-        serwokat(-30);
-        _delay_ms(500);
-        serwokat(45);
-        _delay_ms(500);
-        serwokat(0);
-        _delay_ms(500);
+
         */
+
 
     }
 
-        /*dane=(USART_Receive());
+    /*dane=(USART_Receive());
 
-        if (dane==PRZOD)
-            jedz_przod();
-        /*
-        if (dane==TYL)
-            jedz_tyl();*/
-        /* if  (dane==STOJ)
-             stoj();*/
-        /*
-        if  (dane==PRAWO)
-            jedz_prawo();
-        if  (dane == LEWO)
-            jedz_lewo();*/
+    if (dane==PRZOD)
+        jedz_przod();
+    /*
+    if (dane==TYL)
+        jedz_tyl();*/
+    /* if  (dane==STOJ)
+         stoj();*/
+    /*
+    if  (dane==PRAWO)
+        jedz_prawo();
+    if  (dane == LEWO)
+        jedz_lewo();*/
 
-        // _delay_ms(1);
+    // _delay_ms(1);
 
     return 0;
 }
